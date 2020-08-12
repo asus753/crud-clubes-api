@@ -12,7 +12,11 @@ export class ClubService {
     private clubRepository: Repository<Club>
   ){}
 
-  findAll(): Promise<number> {
-    return this.clubRepository.count()
+  findUnique(id: number | string): Promise<ClubInterface> {
+    return this.clubRepository.findOne(id)
+  }
+
+  findAll(): Promise<ClubInterface[]> {
+    return this.clubRepository.find()
   }
 }

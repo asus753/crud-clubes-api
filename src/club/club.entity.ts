@@ -1,4 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+
+import { Area } from '../area/area.entity';
 
 @Entity({
   name: 'clubs'
@@ -8,47 +10,49 @@ export class Club {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column('text', {nullable: false})
   name: string
 
-  @Column()
+  @Column('text')
   shortName: string
   
-  @Column()
+  @Column('text', {nullable: false})
   tla: string
 
-  //@OneToMany() dessarollar area entity
+  @ManyToOne(() => Area, area => area.id, {eager: true})
+  @JoinColumn({name: 'countryID'})
+  area: Area
 
-  @Column()
+  @Column('text', {nullable: false})
   crestUrl: string
 
-  @Column()
+  @Column('text', {nullable: false})
   address: string
 
-  @Column()
+  @Column('text')
   phone: string
   
-  @Column()
+  @Column('text')
   website: string
 
-  @Column()
+  @Column('text', {nullable: false})
   email: string
 
-  @Column()
+  @Column('integer', {nullable: false})
   founded: number
   
-  @Column()
+  @Column('text')
   clubColors: string
 
-  @Column()
+  @Column('text')
   venue: string
 
-  @Column()
+  @Column('integer', {default: 1})
   active: 0 | 1
 
-  @Column()
+  @Column('text', {default: new Date().toDateString()})
   createdAt: string
 
-  @Column()
+  @Column('text', {default: new Date().toDateString()})
   updatedAt: string
 }

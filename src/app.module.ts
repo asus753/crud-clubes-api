@@ -3,6 +3,9 @@ import { ConfigModule } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { ClubModule } from './club/club.module';
 
+import {Area} from './area/area.entity'
+import {Club} from './club/club.entity'
+
 
 
 @Module({
@@ -13,7 +16,8 @@ import { ClubModule } from './club/club.module';
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: process.env.DB_PATH || 'data/database.sqlite',
-      autoLoadEntities: true
+      entities: [Area, Club],
+      logging: true
     }),
     ClubModule
   ]
