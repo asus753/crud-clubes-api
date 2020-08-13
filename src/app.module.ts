@@ -7,7 +7,6 @@ import {Area} from './area/area.entity'
 import {Club} from './club/club.entity'
 
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({
