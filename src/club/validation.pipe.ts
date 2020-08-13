@@ -1,13 +1,22 @@
-import { PipeTransform, Injectable, ArgumentMetadata, BadRequestException } from '@nestjs/common';
-import { validate } from 'class-validator';
+import { PipeTransform, Injectable, BadRequestException, Inject } from '@nestjs/common';
+import { validate, ValidationError } from 'class-validator';
 import { plainToClass } from 'class-transformer';
+
+import { AreaService } from '../area/area.service'
+import { CreateClubDto } from './dto/create-club.dto'
+import { Club } from './interface/club.interface'
 
 @Injectable()
 export class ClubValidationPipe implements PipeTransform<any> {
-  async transform(value: unknown, { metatype }: ArgumentMetadata): Promise<unknown>{
 
-    const object = plainToClass(metatype, value)
-    const errors = await validate(object, {
+  constructor(
+    @Inject(AreaService) private areaService: AreaService
+  ){}
+
+  async transform(value: unknown): Promise<Club>{
+
+    const newClub = plainToClass(CreateClubDto, value)
+    const errors = await validate(newClub, {
       whitelist: true,
       validationError: {
         target: false,
@@ -15,8 +24,22 @@ export class ClubValidationPipe implements PipeTransform<any> {
       }
     })
 
+    const area = await this.areaService.findByName(newClub.area + '')
+
+    if(!area){
+      const areaError = new ValidationError()
+      areaError.value = newClub.area,
+      areaError.property = 'area',
+      areaError.constraints = {
+        IsValid: 'this area is non-existent'
+      }
+
+      errors.push(areaError)
+    }
+
     if(errors.length > 0) throw new BadRequestException(errors)
-    return value
+
+    else return {...newClub, area}
   }
   
 }

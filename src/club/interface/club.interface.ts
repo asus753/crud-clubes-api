@@ -1,5 +1,5 @@
 export interface Club {
-  id: number
+  id?: number
   name: string
   shortName?: string
   tla: string
@@ -16,6 +16,6 @@ export interface Club {
   clubColors?: string
   venue?: string
   active: 0 | 1
-  createdAt: string
-  updatedAt: string
+  createdAt?: string
+  updatedAt?: string
 }

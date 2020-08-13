@@ -7,15 +7,20 @@ import {
   Min,
   Max,
   IsInt,
-  Matches
+  Matches,
+  IsNotEmpty,
 } from 'class-validator'
 
 
-export class createClubDto {
+export class CreateClubDto {
 
   @IsString()
-  @Matches(/(?!^\d+$)^.+$/, {
-    message: 'The name cant be a only numeric'
+  @IsNotEmpty()
+  @Matches(/(?!^\d+$)^./, {
+    message: 'The name cant be a only numeric',
+  })
+  @Matches(/.*\S.*/, {
+    message: 'the name cant be only withespaces'
   })
   name: string
 
