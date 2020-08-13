@@ -11,9 +11,9 @@ import {
   IsNotEmpty,
 } from 'class-validator'
 
+export class UpdateClubDto {
 
-export class CreateClubDto {
-
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
   @Matches(/(?!^\d+$)^./, {
@@ -22,25 +22,28 @@ export class CreateClubDto {
   @Matches(/.*\S.*/, {
     message: 'the name cant be only withespaces'
   })
-  name: string
+  name?: string
 
   @IsOptional()
   @IsString()
-  shortName: string
+  shortName?: string
 
+  @IsOptional()
   @IsString()
   @Length(3, 3)
-  tla: string
-
-  @IsString()
-  area: string
-
-  @IsUrl()
-  crestUrl: string
+  tla?: string
 
   @IsOptional()
   @IsString()
-  address: string
+  area?: string
+
+  @IsOptional()
+  @IsUrl()
+  crestUrl?: string
+
+  @IsOptional()
+  @IsString()
+  address?: string
 
   @IsOptional()
   @IsString()
@@ -50,13 +53,9 @@ export class CreateClubDto {
   @IsUrl()
   website?: string
 
+  @IsOptional()
   @IsEmail()
-  email: string
-
-  @IsInt()
-  @Min(1700)
-  @Max(new Date().getFullYear())
-  founded: number
+  email?: string
 
   @IsOptional()
   @IsString()
@@ -76,6 +75,7 @@ export class CreateClubDto {
   @Max(1, {
     message: 'active value must be 1 (active) or 0 (inactive)'
   })
-  active: 0 | 1
-}
+  active?: 0 | 1
 
+
+}

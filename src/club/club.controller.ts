@@ -1,8 +1,9 @@
-import { Controller, Get, Param, NotFoundException, Post, Body } from '@nestjs/common';
+import { Controller, Get, Param, NotFoundException, Post, Body, Put, ParseIntPipe } from '@nestjs/common';
 
 import { ClubService } from './club.service'
 import { Club } from './interface/club.interface'
-import { ClubValidationPipe } from './validation.pipe'
+import { DataToUpdateClub } from './interface/update-club.interface'
+import { NewClubValidationPipe, UpdateClubPipe } from './validation.pipe'
 
 
 @Controller('club')
@@ -23,9 +24,16 @@ export class ClubController {
   }
 
   @Post()
-  async create(@Body(ClubValidationPipe) newClubInfo: Club): Promise<void>{
+  async create(@Body(NewClubValidationPipe) newClubInfo: Club): Promise<void>{
     this.clubService.create(newClubInfo)
   }
 
+  @Put(':id')
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body(UpdateClubPipe) updateClubInfo: DataToUpdateClub
+  ): Promise<unknown> {
+    return this.clubService.update(id, updateClubInfo)
+  }
 
 }
