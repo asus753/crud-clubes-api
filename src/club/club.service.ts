@@ -7,7 +7,7 @@ import { DataToUpdateClub } from './interface/update-club.interface'
 import { Club } from './club.entity'
 
 @Injectable()
-export class ClubService {
+export class ClubService { 
   constructor(
     @InjectRepository(Club) private clubRepository: Repository<Club>
   ){}
