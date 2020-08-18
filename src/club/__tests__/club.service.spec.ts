@@ -3,11 +3,12 @@ import { ClubService } from '../club.service'
 import { Club } from '../club.entity'
 import { Repository } from 'typeorm'
 import { getRepositoryToken } from '@nestjs/typeorm'
-import clubFixture from './club.fixture'
+import clubFixture from './fixtures/club.fixture'
 import { NotFoundException } from '@nestjs/common'
 
 const mockClubRepository = () => ({
   find: jest.fn().mockResolvedValue(['all clubs']),
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   findOne: jest.fn(async id => clubFixture),
   save: jest.fn()
 })
