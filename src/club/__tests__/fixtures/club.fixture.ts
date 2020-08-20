@@ -15,7 +15,7 @@ export default {
   createdAt: "2020-07-23 17:31:27.320 +00:00",
   updatedAt: "2020-08-08 18:15:07.055 +00:00",
   area: {
-      "id": 7,
-      "name": "Argentina"
+    id: 7,
+    name: "Argentina"
   }
 }
