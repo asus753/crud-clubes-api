@@ -2,31 +2,9 @@
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
 </p>
 
-[travis-image]: https://api.travis-ci.org/nestjs/nest.svg?branch=master
-[travis-url]: https://travis-ci.org/nestjs/nest
-[linux-image]: https://img.shields.io/travis/nestjs/nest/master.svg?label=linux
-[linux-url]: https://travis-ci.org/nestjs/nest
-  
-  <p align="center">A progressive <a href="http://nodejs.org" target="blank">Node.js</a> framework for building efficient and scalable server-side applications, heavily inspired by <a href="https://angular.io" target="blank">Angular</a>.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/dm/@nestjs/core.svg" alt="NPM Downloads" /></a>
-<a href="https://travis-ci.org/nestjs/nest"><img src="https://api.travis-ci.org/nestjs/nest.svg?branch=master" alt="Travis" /></a>
-<a href="https://travis-ci.org/nestjs/nest"><img src="https://img.shields.io/travis/nestjs/nest/master.svg?label=linux" alt="Linux" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#5" alt="Coverage" /></a>
-<a href="https://gitter.im/nestjs/nestjs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=body_badge"><img src="https://badges.gitter.im/nestjs/nestjs.svg" alt="Gitter" /></a>
-<a href="https://opencollective.com/nest#backer"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec"><img src="https://img.shields.io/badge/Donate-PayPal-dc3d53.svg"/></a>
-  <a href="https://twitter.com/nestframework"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
-
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+A clubs REST API
 
 ## Installation
 
@@ -42,9 +20,6 @@ $ npm run start
 
 # watch mode
 $ npm run start:dev
-
-# production mode
-$ npm run start:prod
 ```
 
 ## Test
@@ -60,16 +35,98 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
-## Support
+## Documentation
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Routes and http methods
 
-## Stay in touch
+* GET  /club      --> return an array with information of ALL clubs
+* GET  /club/:id  --> return un object with information of ONE club with the corresponding id
+* POST /club      --> this is used to create a new club
+* PUT  /club/:id  --> this is used to update an existent club
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
 
-## License
+### Data structure objects 
 
-  Nest is [MIT licensed](LICENSE).
+* Get one club - GET /club/:id
+
+```json
+{
+  "id": 5,
+  "name": "Newcastle United FC",
+  "shortName": "Newcastle",
+  "tla": "NEW",
+  "crestUrl": "https://upload.wikimedia.org/wikipedia/en/5/56/Newcastle_United_Logo.svg",
+  "address": "Sports Direct Arena Newcastle upon Tyne NE1 4ST",
+  "phone": "00 44 870 444 1892",
+  "website": "http://www.nufc.co.uk",
+  "email": "admin@nufc.co.uk",
+  "founded": 1881,
+  "clubColors": "Black / White",
+  "venue": "St. James' Park",
+  "active": 1,
+  "createdAt": "2020-07-23 17:31:27.320 +00:00",
+  "updatedAt": "2020-07-23 17:31:27.320 +00:00",
+  "area": {
+    "id": 208,
+    "name": "England"
+  }
+}
+```
+
+* Get all clubs - GET /club
+
+This is an array with all clubs, the club object inside its equal to the obtained in GET /club/:id
+
+
+* Create a new club - POST /club
+
+To create a new club, you need send the information in the body of request, the data structe is
+very similiar to what you get when you do GET /club
+
+```json
+{
+  "name": "Club Atlético Boca Juniors",
+  "shortName": "Boca",
+  "tla": "BOC",
+  "crestUrl": "https://es.wikipedia.org/wiki/Club_Atl%C3%A9tico_Boca_Juniors#/media/Archivo:Escudo_del_Club_Atl%C3%A9tico_Boca_Juniors_2012.svg",
+  "address": "Brandsen 805, C1161 CABA",
+  "phone": "+54 011 5777-1200",
+  "website": "https://www.bocajuniors.com.ar/",
+  "email": "marketing@bocajuniors.com.ar",
+  "founded": 1905,
+  "clubColors": "Blue / Yellow",
+  "venue": "La Bombonera",
+  "active": 1,
+  "area": "Argentina"
+}
+```
+
+not all fields are necessary to create a club, below is a list of optional fields:
+
+  - shortName
+  - phone
+  - website
+  - clubColors
+  - venue
+  - active --> by default this is set to 1
+
+* Update a club - PUT /club/:id
+
+The structure of body to update a club is very similiar to the create club, but in this you only
+need include the properties you want to update.
+
+Here is an example where we only want to update the name and tla
+
+```json
+{
+  "name": "New name to the club",
+  "tla": "ASD"
+}
+```
+
+:warning: The year of foundation is not upgradeable
+
+
+
+
+
