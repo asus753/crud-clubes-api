@@ -103,12 +103,12 @@ very similiar to what you get when you do GET /club
 
 not all fields are necessary to create a club, below is a list of optional fields:
 
-  - shortName
-  - phone
-  - website
-  - clubColors
-  - venue
-  - active --> by default this is set to 1
+    - shortName
+    - phone
+    - website
+    - clubColors
+    - venue
+    - active --> by default this is set to 1
 
 * Update a club - PUT /club/:id
 
