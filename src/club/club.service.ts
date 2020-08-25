@@ -1,15 +1,13 @@
-import { Injectable, NotFoundException, Inject, BadRequestException } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { Club as ClubInterface } from './interface/club.interface'
-import { DataToUpdateClub } from './interface/update-club.interface'
 import { Club } from './club.entity'
 import { AreaService } from 'src/area/area.service';
 import { Area } from 'src/area/area.entity';
 import { CreateClubDto } from './dto/create-club.dto';
 import { ValidationError } from 'class-validator';
-import { plainToClass } from 'class-transformer';
+import { UpdateClubDto } from './dto/update-club.dto';
 
 @Injectable()
 export class ClubService { 
@@ -18,11 +16,11 @@ export class ClubService {
     @Inject(AreaService) private areaService: AreaService
   ){}
 
-  findUnique(id: number | string): Promise<ClubInterface> {
+  findUnique(id: number | string): Promise<Club | null> {
     return this.clubRepository.findOne(id)
   }
 
-  findAll(): Promise<ClubInterface[]> {
+  findAll(): Promise<Club[]> {
     return this.clubRepository.find()
   }
 
@@ -37,19 +35,38 @@ export class ClubService {
       throw this.createAreaInvalidErrorMessage(newClubInfo.area)
     }
   }
+  async update(clubInstance: Club, updateClubInfo: UpdateClubDto): Promise<Club>{
 
-  async update(id: number, updateClubInfo: DataToUpdateClub): Promise<ClubInterface>{
-    const club = await this.findUnique(id)
-
-    if(club){
-      Object.keys(updateClubInfo).forEach(property => {
-        if(updateClubInfo[property]) club[property] = updateClubInfo[property]
-      })
-
-      this.clubRepository.save(club)
-      return club
+    if(updateClubInfo.area){
+      try {
+        const clubUpdated = await this.updateWithArea(clubInstance, updateClubInfo)
+        return clubUpdated
+      } catch (error) {
+        throw error
+      }
     }else{
-      throw new NotFoundException()
+      const clubUpdated = await this.updateWithoutArea(clubInstance, updateClubInfo)
+      return clubUpdated
+    }
+  }
+
+  private async updateWithoutArea(clubInstance: Club, updateClubInfo: UpdateClubDto): Promise<Club>{
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const {area, ...updateClubInfoWithoutArea} = updateClubInfo 
+
+    const clubUpdated = await this.clubRepository.save({...clubInstance, ...updateClubInfoWithoutArea})
+    return clubUpdated
+  }
+
+  private async updateWithArea(clubInstance: Club, updateClubInfo: UpdateClubDto): Promise<Club> {
+    const area = await this.getArea(updateClubInfo.area)
+
+    if(area) {
+      const clubUpdated = await this.clubRepository.save({...clubInstance, ...updateClubInfo, area})
+      return clubUpdated
+    }
+    else{
+      throw this.createAreaInvalidErrorMessage(updateClubInfo.area)
     }
   }
 
