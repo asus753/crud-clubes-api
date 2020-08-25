@@ -12,7 +12,8 @@ export class AreaService {
     private areaRepository: Repository<Area>
   ){}
 
-  findByName(name: string): Promise<AreaInterface | null> {
-    return this.areaRepository.findOne({name})
+  async findByName(name: string): Promise<AreaInterface | undefined> {
+    const area = await this.areaRepository.findOne({name})
+    return area
   }
 }

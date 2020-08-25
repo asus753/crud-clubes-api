@@ -1,9 +1,11 @@
-import { Controller, Get, Param, NotFoundException, Post, Body, Put, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Param, NotFoundException, Post, Body, Put, ParseIntPipe, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 
 import { ClubService } from './club.service'
 import { Club } from './interface/club.interface'
 import { DataToUpdateClub } from './interface/update-club.interface'
 import { NewClubValidationPipe, UpdateClubPipe } from './validation.pipe'
+import { CreateClubDto } from './dto/create-club.dto';
+import { ValidationError } from 'class-validator';
 
 
 @Controller('club')
@@ -24,8 +26,14 @@ export class ClubController {
   }
 
   @Post()
-  async create(@Body(NewClubValidationPipe) newClubInfo: Club): Promise<void>{
-    this.clubService.create(newClubInfo)
+  async create(@Body(NewClubValidationPipe) newClubInfo: CreateClubDto): Promise<void>{
+    try {
+      await this.clubService.create(newClubInfo)
+    } catch (error) {
+      
+      if(error instanceof ValidationError) throw new BadRequestException([error])
+      else throw new InternalServerErrorException(error)
+    }
   }
 
   @Put(':id')

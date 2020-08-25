@@ -5,7 +5,6 @@ import { plainToClass } from 'class-transformer';
 import { AreaService } from '../area/area.service'
 import { CreateClubDto } from './dto/create-club.dto'
 import { UpdateClubDto } from './dto/update-club.dto'
-import { Club } from './interface/club.interface'
 import { DataToUpdateClub } from './interface/update-club.interface'
 
 import { Area } from '../area/inteface/area'
@@ -13,11 +12,7 @@ import { Area } from '../area/inteface/area'
 @Injectable()
 export class NewClubValidationPipe implements PipeTransform<any> {
 
-  constructor(
-    @Inject(AreaService) private areaService: AreaService
-  ){}
-
-  async transform(value: unknown): Promise<Club>{
+  async transform(value: unknown): Promise<CreateClubDto>{
 
     const newClub = plainToClass(CreateClubDto, value)
     const errors = await validate(newClub, {
@@ -28,22 +23,8 @@ export class NewClubValidationPipe implements PipeTransform<any> {
       }
     })
 
-    const area = await this.areaService.findByName(newClub.area + '')
-
-    if(!area){
-      const areaError = new ValidationError()
-      areaError.value = newClub.area,
-      areaError.property = 'area',
-      areaError.constraints = {
-        IsValid: 'this area is non-existent'
-      }
-
-      errors.push(areaError)
-    }
-
     if(errors.length > 0) throw new BadRequestException(errors)
-
-    else return {...newClub, area}
+    else return newClub
   }
   
 }
