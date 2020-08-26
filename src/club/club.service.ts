@@ -51,26 +51,26 @@ export class ClubService {
     }
   }
 
-  private async updateWithArea(clubInstance: Club, updateClubInfo: UpdateClubDto): Promise<Club> {
-    if(!updateClubInfo.area) throw new Error()
+  private async updateWithArea(clubInstance: Club, updateClubDto: UpdateClubDto): Promise<Club> {
+    if(!updateClubDto.area) throw new Error()
     
-    const area = await this.getArea(updateClubInfo.area)
+    const area = await this.getArea(updateClubDto.area)
 
     if(area) {
-      await this.clubRepository.save({...clubInstance, ...updateClubInfo, area})
+      await this.clubRepository.update(clubInstance.id, {...updateClubDto, area})
       const clubUpdated = await this.findUnique(clubInstance.id)
       return clubUpdated!
     }
     else{
-      throw this.createAreaInvalidErrorMessage(updateClubInfo.area)
+      throw this.createAreaInvalidErrorMessage(updateClubDto.area)
     }
   }
 
-  private async updateWithoutArea(clubInstance: Club, updateClubInfo: UpdateClubDto): Promise<Club>{
+  private async updateWithoutArea(clubInstance: Club, updateClubDto: UpdateClubDto): Promise<Club>{
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const {area, ...updateClubInfoWithoutArea} = updateClubInfo 
+    const {area, ...updateClubInfoWithoutArea} = updateClubDto 
 
-    await this.clubRepository.save({...clubInstance, ...updateClubInfoWithoutArea})
+    await this.clubRepository.update(clubInstance.id, updateClubInfoWithoutArea)
     const clubUpdated = await this.findUnique(clubInstance.id)
     return clubUpdated!
   }
