@@ -16,8 +16,8 @@ export class ClubService {
     @Inject(AreaService) private areaService: AreaService
   ){}
 
-  findUnique(id: number | string): Promise<Club | null> {
-    return this.clubRepository.findOne(id)
+  findUnique(id: number | string): Promise<Club | undefined> {
+    return this.clubRepository.findOne(id, {})
   }
 
   findAll(): Promise<Club[]> {
@@ -35,6 +35,7 @@ export class ClubService {
       throw this.createAreaInvalidErrorMessage(newClubInfo.area)
     }
   }
+
   async update(clubInstance: Club, updateClubInfo: UpdateClubDto): Promise<Club>{
 
     if(updateClubInfo.area){
@@ -59,6 +60,8 @@ export class ClubService {
   }
 
   private async updateWithArea(clubInstance: Club, updateClubInfo: UpdateClubDto): Promise<Club> {
+    if(!updateClubInfo.area) throw new Error()
+    
     const area = await this.getArea(updateClubInfo.area)
 
     if(area) {
@@ -79,7 +82,7 @@ export class ClubService {
     return areaError
   }
 
-  private async getArea(name: string): Promise<Area | null>{
+  private async getArea(name: string): Promise<Area | undefined>{
     const area = await this.areaService.findByName(name)
     return area
   }
