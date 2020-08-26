@@ -3,7 +3,7 @@ import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 't
 import { Area } from '../area/area.entity';
 
 @Entity({
-  name: 'clubs'
+  name: 'clubs',
 })
 export class Club {
 
@@ -13,17 +13,17 @@ export class Club {
   @Column('text', {nullable: false})
   name: string
 
-  @Column('text')
+  @Column('text', {name: 'short_name'})
   shortName: string
   
   @Column('text', {nullable: false})
   tla: string
 
   @ManyToOne(() => Area, area => area.id, {eager: true})
-  @JoinColumn({name: 'countryID'})
+  @JoinColumn({name: 'fk_country'})
   area: Area
 
-  @Column('text', {nullable: false})
+  @Column('text', {nullable: false, name: 'crest_url'})
   crestUrl: string
 
   @Column('text', {nullable: false})
@@ -41,7 +41,7 @@ export class Club {
   @Column('integer', {nullable: false})
   founded: number
   
-  @Column('text')
+  @Column('text', {name: 'club_colors'})
   clubColors: string
 
   @Column('text')
@@ -50,9 +50,9 @@ export class Club {
   @Column('integer', {default: 1})
   active: 0 | 1
 
-  @Column('text', {default: new Date().toDateString()})
+  @Column('text', {default: () => "datetime('now')", name: 'created_at'})
   createdAt: string
 
-  @Column('text', {default: new Date().toDateString()})
+  @Column('text', {default: () => "datetime('now')", name: 'updated_at'})
   updatedAt: string
 }
