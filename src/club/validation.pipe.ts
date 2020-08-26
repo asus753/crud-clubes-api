@@ -9,8 +9,8 @@ import { UpdateClubDto } from './dto/update-club.dto'
 export class NewClubValidationPipe implements PipeTransform<any> {
   async transform(value: unknown): Promise<CreateClubDto>{
 
-    const newClub = plainToClass(CreateClubDto, value)
-    const errors = await validate(newClub, {
+    const clubDto = plainToClass(CreateClubDto, value)
+    const errors = await validate(clubDto, {
       whitelist: true,
       validationError: {
         target: false,
@@ -19,7 +19,7 @@ export class NewClubValidationPipe implements PipeTransform<any> {
     })
 
     if(errors.length > 0) throw new BadRequestException(errors)
-    else return newClub
+    else return clubDto
   }
 }
 
@@ -27,8 +27,8 @@ export class NewClubValidationPipe implements PipeTransform<any> {
 export class UpdateClubPipe implements PipeTransform{
   async transform(value: unknown): Promise<UpdateClubDto> {
 
-    const clubNewInfo = plainToClass(UpdateClubDto, value, {})
-    const errors = await validate(clubNewInfo, {
+    const updateDto = plainToClass(UpdateClubDto, value, {})
+    const errors = await validate(updateDto, {
       whitelist: true,
       validationError: {
         target: false,
@@ -38,6 +38,6 @@ export class UpdateClubPipe implements PipeTransform{
 
     if(errors.length > 0)throw new BadRequestException(errors)
 
-    else return clubNewInfo
+    else return updateDto
   } 
 }

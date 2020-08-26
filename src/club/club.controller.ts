@@ -18,7 +18,7 @@ export class ClubController {
   }
 
   @Get(':id')
-  async findUnique(@Param('id') id: string): Promise<Club>{
+  async findUnique(@Param('id', ParseIntPipe) id: number): Promise<Club>{
     const club = await this.clubService.findUnique(id)
 
     if(club) return club
@@ -26,9 +26,9 @@ export class ClubController {
   }
 
   @Post()
-  async create(@Body(NewClubValidationPipe) newClubInfo: CreateClubDto): Promise<void>{
+  async create(@Body(NewClubValidationPipe) newClubDto: CreateClubDto): Promise<void>{
     try {
-      await this.clubService.create(newClubInfo)
+      await this.clubService.create(newClubDto)
     } catch (error) {
       
       if(error instanceof ValidationError) throw new BadRequestException([error])
@@ -39,7 +39,7 @@ export class ClubController {
   @Put(':id')
   async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body(UpdateClubPipe) updateClubInfo: UpdateClubDto
+    @Body(UpdateClubPipe) updateClubDto: UpdateClubDto
   ): Promise<Club> {
     
     const clubInstance = await this.clubService.findUnique(id)
@@ -47,7 +47,7 @@ export class ClubController {
     if(clubInstance){
 
       try {
-        const clubUpdated = await this.clubService.update(clubInstance, updateClubInfo)
+        const clubUpdated = await this.clubService.update(clubInstance, updateClubDto)
         return clubUpdated
       } catch (error) {
         if(error instanceof ValidationError) throw new BadRequestException([error])
