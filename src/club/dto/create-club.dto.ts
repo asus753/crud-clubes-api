@@ -76,6 +76,6 @@ export class CreateClubDto {
   @Max(1, {
     message: 'active value must be 1 (active) or 0 (inactive)'
   })
-  active: 0 | 1
+  active?: 0 | 1 
 }
 

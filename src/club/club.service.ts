@@ -3,8 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { Club } from './club.entity'
-import { AreaService } from 'src/area/area.service';
-import { Area } from 'src/area/area.entity';
+import { AreaService } from '../area/area.service';
+import { Area } from '../area/area.entity';
 import { CreateClubDto } from './dto/create-club.dto';
 import { ValidationError } from 'class-validator';
 import { UpdateClubDto } from './dto/update-club.dto';
@@ -16,7 +16,7 @@ export class ClubService {
     @Inject(AreaService) private areaService: AreaService
   ){}
 
-  findUnique(id: number | string): Promise<Club | undefined> {
+  findUnique(id: number): Promise<Club | undefined> {
     return this.clubRepository.findOne(id)
   }
 
@@ -77,6 +77,7 @@ export class ClubService {
 
   private createAreaInvalidErrorMessage(value: string): ValidationError{
     const areaError = new ValidationError()
+    areaError.children = []
     areaError.property = 'area'
     areaError.value = value
     areaError.constraints = {'valid-area': 'the area does not exist'}

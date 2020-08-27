@@ -14,7 +14,7 @@ import {Club} from './club/club.entity'
     }),
     TypeOrmModule.forRoot({
       type: 'sqlite',
-      database: process.env.DB_PATH || 'data/database.sqlite',
+      database: process.env.DB_PATH,
       entities: [Area, Club],
       logging: true
     }),
@@ -22,3 +22,5 @@ import {Club} from './club/club.entity'
   ]
 })
 export class AppModule {}
+
+ // CORREGIR TESTS
