@@ -1,59 +1,39 @@
-jest.mock('../../area/area.service')
 import { NewClubValidationPipe, UpdateClubPipe } from '../validation.pipe'
-import { AreaService } from '../../area/area.service'
-import { mocked } from 'ts-jest/utils'
 import { invalidCreationRequest, validCreationRequest, invalidUpdateRequest, validUpdateRequest } from './fixtures/requests.fixture'
 import { BadRequestException } from '@nestjs/common'
 import { Club } from '../club.entity'
+import { ValidationError } from 'class-validator'
+import { CreateClubDto } from '../dto/create-club.dto'
+import { UpdateClubDto } from '../dto/update-club.dto'
 
-const mockedAreaService = mocked(AreaService, true)
 
 describe('new club pipe', () => {
-  const areaServiceInstance = new AreaService(null)
-  const pipe = new NewClubValidationPipe(areaServiceInstance)
-
-  beforeEach(() => {
-    mockedAreaService.mockClear()
-    mockedAreaService.prototype.findByName.mockClear()
-  })
+  const creationPipe = new NewClubValidationPipe()
 
   it('unseccsefully creation', async () => {
     try {
-      await pipe.transform(invalidCreationRequest)
+      await creationPipe.transform(invalidCreationRequest)
     } catch (error) {
 
       const validationErrorsArray = error.getResponse().message
       
       expect(error).toBeInstanceOf(BadRequestException)
       expect(Array.isArray(validationErrorsArray)).toBe(true)
-      expect(areaServiceInstance.findByName).toBeCalledWith(invalidCreationRequest.area)
+      expect(validationErrorsArray.every(error => error instanceof ValidationError))
+      
     }
   })
 
   it('succsesfully creation', async () => {
-    const areaEg = {
-      id: 1,
-      name: 'example area'
-    }
-    mockedAreaService.prototype.findByName.mockResolvedValueOnce(areaEg)
+    const clubDto = await creationPipe.transform(validCreationRequest)
 
-    const clubValidated = await pipe.transform(validCreationRequest)
-
-    expect(clubValidated).toMatchObject(new Club())
-    expect(areaServiceInstance.findByName).toBeCalledWith(validCreationRequest.area)
-    expect(clubValidated.area).toBe(areaEg)
+    expect(clubDto).toBeInstanceOf(CreateClubDto)
   })
 
 })
 
 describe('update club pipe', () => {
-  const areaServiceInstance = new AreaService(null)
-  const updatePipe = new UpdateClubPipe(areaServiceInstance)
-
-  beforeEach(() => {
-    mockedAreaService.mockClear()
-    mockedAreaService.prototype.findByName.mockClear()
-  })
+  const updatePipe = new UpdateClubPipe()
 
   it('unsucssesfully update', async () => {
     try {
@@ -64,22 +44,13 @@ describe('update club pipe', () => {
       
       expect(error).toBeInstanceOf(BadRequestException)
       expect(Array.isArray(validationErrorsArray)).toBe(true)
-      expect(areaServiceInstance.findByName).toBeCalledWith(invalidUpdateRequest.area)
+      expect(validationErrorsArray.every(error => error instanceof ValidationError)).toBe(true)
     }
   })
 
   it('sucssesfully update', async () => {
-    const areaEg = {
-      id: 1,
-      name: 'example area'
-    }
-    mockedAreaService.prototype.findByName.mockResolvedValueOnce(areaEg)
+    const updateDto = await updatePipe.transform(validUpdateRequest)
 
-    const updateClub = await updatePipe.transform(validUpdateRequest)
-
-    expect(updateClub).toMatchObject({...validUpdateRequest, area: areaEg})
-    expect(areaServiceInstance.findByName).toBeCalledWith(validUpdateRequest.area)
-    expect(updateClub.area).toBe(areaEg)
-
+    expect(updateDto).toBeInstanceOf(UpdateClubDto)
   })
 })
