@@ -32,7 +32,10 @@ export class ClubController {
     } catch (error) {
       
       if(error instanceof ValidationError) throw new BadRequestException([error])
-      else throw new InternalServerErrorException(error)
+      else {
+        console.error(error)
+        throw new InternalServerErrorException()
+      }
     }
   }
 
@@ -45,7 +48,7 @@ export class ClubController {
     const clubInstance = await this.clubService.findUnique(id)
 
     if(clubInstance){
-
+      
       try {
         const clubUpdated = await this.clubService.update(clubInstance, updateClubDto)
         return clubUpdated

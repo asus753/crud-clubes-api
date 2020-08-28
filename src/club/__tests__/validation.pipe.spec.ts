@@ -1,7 +1,6 @@
 import { NewClubValidationPipe, UpdateClubPipe } from '../validation.pipe'
 import { invalidCreationRequest, validCreationRequest, invalidUpdateRequest, validUpdateRequest } from './fixtures/requests.fixture'
 import { BadRequestException } from '@nestjs/common'
-import { Club } from '../club.entity'
 import { ValidationError } from 'class-validator'
 import { CreateClubDto } from '../dto/create-club.dto'
 import { UpdateClubDto } from '../dto/update-club.dto'

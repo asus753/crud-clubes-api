@@ -12,3 +12,8 @@ export const newClubDtoFixture = {
   clubColors: "Red / White",
   venue: "Emirates Stadium"
 }
+
+export const updateClubDtoFixture = {
+  name: "new name",
+  area: "new area"
+}
