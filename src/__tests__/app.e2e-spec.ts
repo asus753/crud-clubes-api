@@ -1,15 +1,12 @@
 import * as request from 'supertest';
 import { Test } from '@nestjs/testing';
-import { INestApplication, HttpStatus, BadRequestException, NotFoundException } from '@nestjs/common';
-import { TypeOrmModule, getRepositoryToken, getConnectionToken, getEntityManagerToken,   } from '@nestjs/typeorm';
-import { Club } from '../club.entity';
-import { invalidCreationRequest, validCreationRequest, validUpdateRequest, invalidUpdateRequest } from './fixtures/requests.fixture';
-import { Area } from '../../area/area.entity';
-import { ClubModule } from '../club.module';
+import { INestApplication, HttpStatus } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Club } from '../club/club.entity';
+import { invalidCreationRequest, validCreationRequest, validUpdateRequest, invalidUpdateRequest } from '../club/__tests__/fixtures/requests.fixture';
+import { Area } from '../area/area.entity';
+import { ClubModule } from '../club/club.module';
 import { getRepository } from 'typeorm';
-import { ValidationError } from 'class-validator';
-import { async } from 'rxjs';
-
 
 describe('club', () => {
   let app: INestApplication
@@ -117,8 +114,6 @@ describe('club', () => {
     })
   })
 
-  //CUBRIR UPDATE METHODS
-
   describe('Updating clubs', () => {
 
     it('update succesfully', async () => {
@@ -177,56 +172,5 @@ describe('club', () => {
         .expect(HttpStatus.NOT_FOUND)
     })
   })
-
-
-  /*
-
-  describe('/PUT club', () => {
-
-    beforeEach(() => {
-      mockClubService.prototype.update.mockClear()
-    })
-
-
-    it('succesfully update', () => {
-      const CLUB_ID = 1
-      const bodyReq = validUpdateRequest
-
-      return request(app.getHttpServer())
-        .put(`/club/${CLUB_ID}`)
-        .send(bodyReq)
-        .expect(() => expect(mockPipeUpdate.transform).toBeCalled())
-        .expect(HttpStatus.OK)
-        .expect('Content-Type', /json/)
-    })
-
-    it('unsuccesfully update: not found', () => {
-      const CLUB_ID = -1
-      const bodyReq = validUpdateRequest
-      const notFoundException = new NotFoundException()
-    
-      mockClubService.prototype.findUnique.mockResolvedValueOnce(undefined)
-
-      return request(app.getHttpServer())
-        .put(`/club/${CLUB_ID}`)
-        .send(bodyReq)
-        .expect(() => expect(mockPipeUpdate.transform).toBeCalled())
-        .expect(HttpStatus.NOT_FOUND, notFoundException.getResponse())
-    })
-
-    it('unsuccesfully update: bad request', () => {
-      const CLUB_ID = 1
-      const bodyReq = invalidUpdateRequest
-      const badRequestException = new BadRequestException('validation errors')
-
-      mockPipeUpdate.transform.mockRejectedValueOnce(badRequestException)
-
-      return request(app.getHttpServer())
-        .put(`/club/${CLUB_ID}`)
-        .send(bodyReq)
-        .expect(() => expect(mockClubService.prototype.update).not.toBeCalled())
-        .expect(HttpStatus.BAD_REQUEST, badRequestException.getResponse())
-    })
-  }) */
 })
 
