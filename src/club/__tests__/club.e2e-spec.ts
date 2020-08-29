@@ -1,150 +1,232 @@
 import * as request from 'supertest';
 import { Test } from '@nestjs/testing';
-import { ClubService } from '../club.service';
 import { INestApplication, HttpStatus, BadRequestException, NotFoundException } from '@nestjs/common';
-import { AppModule } from '../../app.module';
-import { NewClubValidationPipe, UpdateClubPipe } from '../validation.pipe';
-import { getRepositoryToken } from '@nestjs/typeorm';
+import { TypeOrmModule, getRepositoryToken, getConnectionToken, getEntityManagerToken,   } from '@nestjs/typeorm';
 import { Club } from '../club.entity';
+import { invalidCreationRequest, validCreationRequest, validUpdateRequest, invalidUpdateRequest } from './fixtures/requests.fixture';
+import { Area } from '../../area/area.entity';
+import { ClubModule } from '../club.module';
+import { getRepository } from 'typeorm';
+import { ValidationError } from 'class-validator';
+import { async } from 'rxjs';
+
 
 describe('club', () => {
   let app: INestApplication
-
-  const mockClubService = {
-    findAll: jest.fn(() => ['clubs']),
-    findUnique: jest.fn(() => 'club'),
-    create: jest.fn(),
-    update: jest.fn((id, any) => any)
-  }
-
-  const mockPipeCreate = {
-    transform: jest.fn(body => body)
-  }
-  
-  const mockPipeUpdate = {
-    transform: jest.fn(body => body)
-  }
   
   beforeAll(async () => {
-    const module = await Test.createTestingModule({
-      imports: [AppModule]
-    }).overrideProvider(ClubService).useValue(mockClubService)
-      .overridePipe(NewClubValidationPipe).useValue(mockPipeCreate)
-      .overridePipe(UpdateClubPipe).useValue(mockPipeUpdate)
-      .overrideProvider(getRepositoryToken(Club)).useValue(null)
-      .compile()
+    const moduleRef = await Test.createTestingModule({
+      imports: [
+        TypeOrmModule.forRoot({
+          type: 'sqlite',
+          database: ':memory:',
+          synchronize: true,
+          entities: [Area, Club]
+        }),
+        ClubModule
+      ]
+    }).compile()
 
-    app = module.createNestApplication()
+    app = moduleRef.createNestApplication()
     await app.init()
+    await setupAreaTable()
   })
 
-  it('/GET club', () => {
-    return request(app.getHttpServer())
-      .get('/club')
-      .expect(HttpStatus.OK, mockClubService.findAll())
-  })
+  async function setupAreaTable (): Promise<void>{
+    const areaRepository = getRepository(Area)
+    const areasForTest = ['Argentina', 'England']
 
-  describe('/GET club/:id', () => {
-    it('susccesfully find', () => {
-      const CLUB_ID = '1'
-
-      return request(app.getHttpServer())
-        .get(`/club/${CLUB_ID}`)
-        .expect(() => expect(mockClubService.findUnique).toBeCalledWith(CLUB_ID))
-        .expect(HttpStatus.OK, mockClubService.findUnique())
+    areasForTest.forEach(async area => {
+      await areaRepository.insert({name: area})
     })
+  }
 
-    it('not found', async () => {
-      const CLUB_ID = '-1'
+  afterAll(() => {
+    app.close()
+  })
 
-      mockClubService.findUnique.mockReturnValue(null)
+  describe('Creating new club', () => {
+    it('create one club correctly', async () => {
+      const bodyReq = validCreationRequest
 
       await request(app.getHttpServer())
-        .get(`/club/${CLUB_ID}`)
-        .expect(HttpStatus.NOT_FOUND, new NotFoundException().getResponse())
-
-      mockClubService.findUnique.mockImplementation(() => 'club')  
-    })
-  })
-
-  describe('/POST club', () => {
-
-    beforeEach(() => {
-      mockClubService.create.mockClear()
-    })
-
-    it('succesfully post', () => {
-      const req = {name: 'someone club'}
-
-      return request(app.getHttpServer())
         .post('/club')
-        .send(req)
-        .expect(() => expect(mockPipeCreate.transform).toBeCalled())
-        .expect(() => expect(mockClubService.create).toBeCalledWith(req))
+        .send(bodyReq)
         .expect(HttpStatus.CREATED)
     })
 
-    it('bad request', () => {
-      const badRequestException = new BadRequestException('validation errors')
+    it('try to create club with invalid information', async () => {
+      const bodyReq = invalidCreationRequest
 
-      mockPipeCreate.transform.mockRejectedValueOnce(badRequestException)
-
-      return request(app.getHttpServer())
+      await request(app.getHttpServer())
         .post('/club')
-        .expect(() => expect(mockClubService.create).not.toBeCalled())
-        .expect(HttpStatus.BAD_REQUEST, badRequestException.getResponse())
+        .send(bodyReq)
+        .expect(HttpStatus.BAD_REQUEST)
+        .expect(res => {
+          expect(Array.isArray(res.body.message)).toBe(true)
+        })
+    })
+
+    it('try to create club with valid information but non-existent area', async () => {
+      const nonExistentArea = 'Narnia'
+      const bodyReq = validCreationRequest
+      bodyReq.area = nonExistentArea
+
+      await request(app.getHttpServer())
+        .post('/club')
+        .send(bodyReq)
+        .expect(HttpStatus.BAD_REQUEST)
+        .expect(res => {
+          expect(Array.isArray(res.body.message)).toBe(true)
+        })
     })
   })
+
+  describe('Geting clubs', () => {
+
+    it('get all clubs',async () => {
+
+      await request(app.getHttpServer())
+        .get('/club')
+        .expect(HttpStatus.OK)
+        .expect('Content-Type', /json/)
+        .expect(res => {
+          expect(Array.isArray(res.body)).toBe(true)
+          expect(res.body.length).toBe(1)
+        })
+    })
+
+    it('get one club succesfully', async () => {
+      const CLUB_ID = 1
+
+      await request(app.getHttpServer())
+        .get('/club/' + CLUB_ID)
+        .expect(HttpStatus.OK)
+        .expect('Content-Type', /json/)
+        .expect(res => {
+          expect(res.body).toMatchObject(new Club())
+        })
+    })
+
+    it('get one non-existent club', async() => {
+      const CLUB_ID = -1
+
+      await request(app.getHttpServer())
+        .get('/club/' + CLUB_ID)
+        .expect(HttpStatus.NOT_FOUND)
+    })
+  })
+
+  //CUBRIR UPDATE METHODS
+
+  describe('Updating clubs', () => {
+
+    it('update succesfully', async () => {
+      const CLUB_ID_TO_UPDATE = 1
+      const bodyReq = validUpdateRequest
+
+      await request(app.getHttpServer())
+        .put('/club/' + CLUB_ID_TO_UPDATE)
+        .send(bodyReq)
+        .expect(HttpStatus.OK)
+        .expect('Content-Type', /json/)
+        .expect(res => {
+          expect(res.body).toMatchObject(new Club())
+          expect(res.body.name).toEqual(bodyReq.name)
+          expect(res.body.area.name).toEqual(bodyReq.area)
+        })
+    })
+
+    it('try to update with invalid information', async () => {
+      const CLUB_ID_TO_UPDATE = 1
+      const bodyReq = invalidUpdateRequest
+
+      await request(app.getHttpServer())
+      .put('/club/' + CLUB_ID_TO_UPDATE)
+      .send(bodyReq)
+      .expect(HttpStatus.BAD_REQUEST)
+      .expect('Content-Type', /json/)
+      .expect(res => {
+        expect(Array.isArray(res.body.message)).toBe(true)
+      })
+    })
+
+    it('try to update with valid information but non-existent area', async () => {
+      const CLUB_ID_TO_UPDATE = 1
+      const nonExistentArea = 'Narnia'
+      const bodyReq = validUpdateRequest
+      bodyReq.area = nonExistentArea
+
+      await request(app.getHttpServer())
+        .put('/club/' + CLUB_ID_TO_UPDATE)
+        .send(bodyReq)
+        .expect(HttpStatus.BAD_REQUEST)
+        .expect('Content-Type', /json/)
+        .expect(res => {
+          expect(Array.isArray(res.body.message)).toBe(true)
+        })
+    })
+
+    it('try to update non-existent club', async () => {
+      const CLUB_ID_TO_UPDATE = -1
+      const bodyReq = validUpdateRequest
+
+      await request(app.getHttpServer())
+        .put('/club/' + CLUB_ID_TO_UPDATE)
+        .send(bodyReq)
+        .expect(HttpStatus.NOT_FOUND)
+    })
+  })
+
+
+  /*
 
   describe('/PUT club', () => {
 
     beforeEach(() => {
-      mockClubService.update.mockClear()
+      mockClubService.prototype.update.mockClear()
     })
 
 
     it('succesfully update', () => {
       const CLUB_ID = 1
-      const req = {name: 'new name'}
-
+      const bodyReq = validUpdateRequest
 
       return request(app.getHttpServer())
         .put(`/club/${CLUB_ID}`)
-        .send(req)
+        .send(bodyReq)
         .expect(() => expect(mockPipeUpdate.transform).toBeCalled())
-        .expect(() => expect(mockClubService.update).toBeCalledWith(CLUB_ID, req))
-        .expect(HttpStatus.OK, req)
+        .expect(HttpStatus.OK)
+        .expect('Content-Type', /json/)
     })
 
-    it('not found', () => {
+    it('unsuccesfully update: not found', () => {
       const CLUB_ID = -1
-      const req = {name: 'new name'}
+      const bodyReq = validUpdateRequest
       const notFoundException = new NotFoundException()
     
-      mockClubService.update.mockRejectedValueOnce(notFoundException)
+      mockClubService.prototype.findUnique.mockResolvedValueOnce(undefined)
 
       return request(app.getHttpServer())
         .put(`/club/${CLUB_ID}`)
-        .send(req)
+        .send(bodyReq)
+        .expect(() => expect(mockPipeUpdate.transform).toBeCalled())
         .expect(HttpStatus.NOT_FOUND, notFoundException.getResponse())
-
     })
 
-    it('bad request', () => {
+    it('unsuccesfully update: bad request', () => {
       const CLUB_ID = 1
-      const badReq = {name: 555}
+      const bodyReq = invalidUpdateRequest
       const badRequestException = new BadRequestException('validation errors')
 
       mockPipeUpdate.transform.mockRejectedValueOnce(badRequestException)
 
       return request(app.getHttpServer())
         .put(`/club/${CLUB_ID}`)
-        .send(badReq)
-        .expect(() => expect(mockClubService.update).not.toBeCalled())
+        .send(bodyReq)
+        .expect(() => expect(mockClubService.prototype.update).not.toBeCalled())
         .expect(HttpStatus.BAD_REQUEST, badRequestException.getResponse())
     })
-  })
-
-
+  }) */
 })
 

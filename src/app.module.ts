@@ -22,5 +22,3 @@ import {Club} from './club/club.entity'
   ]
 })
 export class AppModule {}
-
- // CORREGIR TESTS

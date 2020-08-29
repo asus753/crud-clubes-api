@@ -12,9 +12,9 @@ export const invalidCreationRequest = {
 }
 
 export const validCreationRequest = {
-  area: "England",
-  name: "Valid name",
+  area: "Argentina",
   shortName: "Arsenal",
+  name: "Arsenal FC",
   tla: "ARS",
   crestUrl: "https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg",
   address: "75 Drayton Park London N5 1BU",
@@ -35,8 +35,6 @@ export const invalidUpdateRequest = {
 
 export const validUpdateRequest  = {
   name: 'new name',
-  area: 'valid area',
-  tla: 'ASD',
-  email: 'thisIsValidEmail@gmail.com'
+  area: 'England'
 }
 
