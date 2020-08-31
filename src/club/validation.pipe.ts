@@ -7,9 +7,9 @@ import { UpdateClubDto } from './dto/update-club.dto'
 
 @Injectable()
 export class NewClubValidationPipe implements PipeTransform<any> {
-  async transform(value: unknown): Promise<CreateClubDto>{
+  async transform(bodyReq: unknown): Promise<CreateClubDto>{
 
-    const clubDto = plainToClass(CreateClubDto, value)
+    const clubDto = plainToClass(CreateClubDto, bodyReq)
     const errors = await validate(clubDto, {
       whitelist: true,
       validationError: {
@@ -25,9 +25,9 @@ export class NewClubValidationPipe implements PipeTransform<any> {
 
 @Injectable()
 export class UpdateClubPipe implements PipeTransform{
-  async transform(value: unknown): Promise<UpdateClubDto> {
+  async transform(bodyReq: unknown): Promise<UpdateClubDto> {
 
-    const updateDto = plainToClass(UpdateClubDto, value, {})
+    const updateDto = plainToClass(UpdateClubDto, bodyReq, {})
     const errors = await validate(updateDto, {
       whitelist: true,
       validationError: {

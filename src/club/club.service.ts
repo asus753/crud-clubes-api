@@ -59,7 +59,9 @@ export class ClubService {
     if(area) {
       await this.clubRepository.update(clubInstance.id, {...updateClubDto, area})
       const clubUpdated = await this.findUnique(clubInstance.id)
-      return clubUpdated!
+      
+      if(clubUpdated) return clubUpdated
+      else throw new Error('divergences between ids in database')
     }
     else{
       throw this.createAreaInvalidErrorMessage(updateClubDto.area)
@@ -72,7 +74,9 @@ export class ClubService {
 
     await this.clubRepository.update(clubInstance.id, updateClubInfoWithoutArea)
     const clubUpdated = await this.findUnique(clubInstance.id)
-    return clubUpdated!
+
+    if(clubUpdated) return clubUpdated
+    else throw new Error('divergences between ids in database')
   }
 
   private createAreaInvalidErrorMessage(value: string): ValidationError{

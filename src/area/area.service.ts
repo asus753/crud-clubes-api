@@ -3,7 +3,6 @@ import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common'
 
 import { Area } from './area.entity'
-import { Area as AreaInterface } from './inteface/area'
 
 @Injectable()
 export class AreaService {
@@ -12,8 +11,7 @@ export class AreaService {
     private areaRepository: Repository<Area>
   ){}
 
-  async findByName(name: string): Promise<AreaInterface | undefined> {
-    const area = await this.areaRepository.findOne({name})
-    return area
+  async findByName(name: string): Promise<Area | undefined> {
+    return this.areaRepository.findOne({name})
   }
 }
