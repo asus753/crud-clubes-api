@@ -105,35 +105,30 @@ describe('ClubService', () => {
     it('update succesfully without area', async () => {
       const updateInfo = { name: 'other name' }
       const clubInstance = plainToClass(Club, clubFixture)
-      mockClubRepository.findOne.mockResolvedValueOnce(clubFixture)
 
-      const result = await clubService.update(clubInstance, updateInfo)
+      await clubService.update(clubInstance, updateInfo)
 
       expect(areaService.findByName).not.toBeCalled()
       expect(clubRepository.update).toHaveBeenCalledWith(
         clubInstance.id,
         updateInfo,
       )
-      expect(mockClubRepository.findOne).toHaveBeenCalledWith(clubInstance.id)
-      expect(result).toEqual(clubFixture)
     })
 
     it('update succesfully with area', async () => {
       const mockValidArea = { id: 1, name: 'area valid' }
       mockAreaService.findByName.mockResolvedValueOnce(mockValidArea)
-      mockClubRepository.findOne.mockResolvedValueOnce(clubFixture)
       const updateDto = { name: 'other name', area: 'England' }
       const clubInstance = plainToClass(Club, clubFixture)
 
-      const result = await clubService.update(clubInstance, updateDto)
+      await clubService.update(clubInstance, updateDto)
 
       expect(areaService.findByName).toBeCalledWith(updateDto.area)
       expect(clubRepository.update).toBeCalledWith(clubInstance.id, {
         ...updateDto,
         area: mockValidArea,
       })
-      expect(mockClubRepository.findOne).toBeCalledWith(clubInstance.id)
-      expect(result).toEqual(clubFixture)
+      
     })
 
     it('update unsuccessfully with area', async () => {

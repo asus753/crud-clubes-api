@@ -42,30 +42,25 @@ export class ClubService {
   async update( 
     clubInstance: Club,
     updateClubDto: UpdateClubDto,
-  ): Promise<Club> {
+  ): Promise<void> {
     if (updateClubDto.area) {
       try {
-        const clubUpdated = await this.updateWithArea(
-          clubInstance,
-          updateClubDto,
-        )
-        return clubUpdated
+        await this.updateWithArea(clubInstance, updateClubDto)
       } catch (error) {
         throw error
       }
     } else {
-      const clubUpdated = await this.updateWithoutArea(
+      await this.updateWithoutArea(
         clubInstance,
         updateClubDto,
       )
-      return clubUpdated
     }
   }
 
   private async updateWithArea(
     clubInstance: Club,
     updateClubDto: UpdateClubDto,
-  ): Promise<Club> {
+  ): Promise<void> {
     if (!updateClubDto.area) throw new Error()
 
     const area = await this.getArea(updateClubDto.area)
@@ -75,10 +70,6 @@ export class ClubService {
         ...updateClubDto,
         area,
       })
-      const clubUpdated = await this.clubRepository.findOne(clubInstance.id)
-
-      if (clubUpdated) return clubUpdated
-      else throw new Error('divergences between ids in database')
     } else {
       throw this.createAreaInvalidErrorMessage(updateClubDto.area)
     }
@@ -87,15 +78,11 @@ export class ClubService {
   private async updateWithoutArea(
     clubInstance: Club,
     updateClubDto: UpdateClubDto,
-  ): Promise<Club> {
+  ): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { area, ...updateClubInfoWithoutArea } = updateClubDto
 
     await this.clubRepository.update(clubInstance.id, updateClubInfoWithoutArea)
-    const clubUpdated = await this.clubRepository.findOne(clubInstance.id)
-
-    if (clubUpdated) return clubUpdated
-    else throw new Error('divergences between ids in database')
   }
 
   private createAreaInvalidErrorMessage(value: string): ValidationError {

@@ -119,7 +119,6 @@ describe('club controller tests', () => {
     it('update succesfully', async () => {
       const CLUB_ID_TO_UPDATE = 1
       mocked(clubService).findUnique.mockResolvedValueOnce(club)
-      mocked(clubService).update.mockResolvedValueOnce(new Club())
 
       const clubUpdated = await clubController.update(
         CLUB_ID_TO_UPDATE,
@@ -127,11 +126,12 @@ describe('club controller tests', () => {
       )
 
       expect(clubService.findUnique).toBeCalledWith(CLUB_ID_TO_UPDATE)
+      expect(clubService.findUnique).toBeCalledTimes(2)
       expect(clubService.update).toBeCalledWith(club, updateDto)
       expect(clubUpdated).toBeInstanceOf(Club)
     })
 
-    it('update unsuccsesfully: not founde club', async () => {
+    it('update unsuccsesfully: not found club', async () => {
       const CLUB_ID_TO_UPDATE = -1
       mocked(clubService).findUnique.mockResolvedValueOnce(undefined)
 
@@ -139,6 +139,7 @@ describe('club controller tests', () => {
         await clubController.update(CLUB_ID_TO_UPDATE, updateDto)
       } catch (error) {
         expect(error).toBeInstanceOf(NotFoundException)
+        expect(clubService.findUnique).toBeCalledTimes(1)
         expect(clubService.update).not.toBeCalled()
       }
     })
