@@ -174,4 +174,19 @@ describe('club', () => {
         .expect(HttpStatus.NOT_FOUND)
     })
   })
+
+  describe('Deleting clubs', () => {
+
+    it('detele succesfully one clubs', async () => {
+      const CLUB_ID_TO_DELETE = 1
+
+      await request(app.getHttpServer())
+        .delete('/club/' + CLUB_ID_TO_DELETE)
+        .expect(HttpStatus.NO_CONTENT)
+
+      await request(app.getHttpServer())
+        .get('/club/' + CLUB_ID_TO_DELETE)
+        .expect(HttpStatus.NOT_FOUND)
+    })
+  })
 })

@@ -163,4 +163,15 @@ describe('club controller tests', () => {
       }
     })
   })
+
+  describe('delete club', () => {
+
+    it('delete succesfully', async () => {
+      const CLUB_ID_TO_DELETE = 1
+
+      await clubController.delete(CLUB_ID_TO_DELETE)
+
+      expect(clubService.delete).toBeCalledWith(CLUB_ID_TO_DELETE)
+    })
+  })
 })

@@ -75,7 +75,7 @@ export class ClubService {
         ...updateClubDto,
         area,
       })
-      const clubUpdated = await this.findUnique(clubInstance.id)
+      const clubUpdated = await this.clubRepository.findOne(clubInstance.id)
 
       if (clubUpdated) return clubUpdated
       else throw new Error('divergences between ids in database')
@@ -92,7 +92,7 @@ export class ClubService {
     const { area, ...updateClubInfoWithoutArea } = updateClubDto
 
     await this.clubRepository.update(clubInstance.id, updateClubInfoWithoutArea)
-    const clubUpdated = await this.findUnique(clubInstance.id)
+    const clubUpdated = await this.clubRepository.findOne(clubInstance.id)
 
     if (clubUpdated) return clubUpdated
     else throw new Error('divergences between ids in database')
