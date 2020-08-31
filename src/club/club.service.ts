@@ -35,7 +35,11 @@ export class ClubService {
     }
   }
 
-  async update(
+  async delete(id: number): Promise<void> {
+    await this.clubRepository.delete({id})
+  }
+
+  async update( 
     clubInstance: Club,
     updateClubDto: UpdateClubDto,
   ): Promise<Club> {

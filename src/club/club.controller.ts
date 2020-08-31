@@ -9,6 +9,9 @@ import {
   ParseIntPipe,
   BadRequestException,
   InternalServerErrorException,
+  Delete,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common'
 
 import { ClubService } from './club.service'
@@ -71,5 +74,13 @@ export class ClubController {
         else throw new InternalServerErrorException()
       }
     } else throw new NotFoundException()
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async delete(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<void> {
+    await this.clubService.delete(id)
   }
 }
