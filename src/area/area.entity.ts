@@ -1,10 +1,9 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm'
 
 @Entity({
-  name: 'countries' 
+  name: 'countries',
 })
 export class Area {
-
   @PrimaryGeneratedColumn({})
   id: number
 

@@ -1,24 +1,23 @@
-import { Module } from '@nestjs/common';
+import { Module } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
-import { ClubModule } from './club/club.module';
 
-import {Area} from './area/area.entity'
-import {Club} from './club/club.entity'
-
+import { ClubModule } from './club/club.module'
+import { Area } from './area/area.entity'
+import { Club } from './club/club.entity'
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: '.env'
+      envFilePath: '.env',
     }),
     TypeOrmModule.forRoot({
       type: 'sqlite',
-      database: process.env.DB_PATH || 'data/database.sqlite',
+      database: process.env.DB_PATH,
       entities: [Area, Club],
-      logging: true
+      logging: true,
     }),
-    ClubModule
-  ]
+    ClubModule,
+  ],
 })
 export class AppModule {}
