@@ -39,10 +39,11 @@ $ npm run test:cov
 
 ### Routes and http methods
 
-* GET  /club      --> return an array with information of ALL clubs
-* GET  /club/:id  --> return un object with information of ONE club with the corresponding id
-* POST /club      --> this is used to create a new club
-* PUT  /club/:id  --> this is used to update an existent club
+* GET  /club        --> return an array with information of ALL clubs
+* GET  /club/:id    --> return un object with information of ONE club with the corresponding id
+* POST /club        --> this is used to create a new club
+* PUT  /club/:id    --> this is used to update an existent club
+* DELETE /club/:id  --> delete the club with corresponding id
 
 
 ### Data structure objects 
@@ -81,7 +82,7 @@ This is an array with all clubs, the club object inside its equal to the obtaine
 * Create a new club - POST /club
 
 To create a new club, you need send the information in the body of request, the data structe is
-very similiar to what you get when you do GET /club
+very similiar to what you get when you do GET /club/:id
 
 ```json
 {
@@ -125,6 +126,10 @@ Here is an example where we only want to update the name and tla
 ```
 
 :warning: The year of foundation is not upgradeable
+
+* Delete club - DELETE /club/:id
+
+This method will delete **permanently** the club
 
 
 
