@@ -1,16 +1,21 @@
-import * as request from 'supertest';
-import { Test } from '@nestjs/testing';
-import { INestApplication, HttpStatus } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Club } from '../club/club.entity';
-import { invalidCreationRequest, validCreationRequest, validUpdateRequest, invalidUpdateRequest } from '../club/__tests__/fixtures/requests.fixture';
-import { Area } from '../area/area.entity';
-import { ClubModule } from '../club/club.module';
-import { getRepository } from 'typeorm';
+import * as request from 'supertest'
+import { Test } from '@nestjs/testing'
+import { INestApplication, HttpStatus } from '@nestjs/common'
+import { TypeOrmModule } from '@nestjs/typeorm'
+import { Club } from '../club/club.entity'
+import {
+  invalidCreationRequest,
+  validCreationRequest,
+  validUpdateRequest,
+  invalidUpdateRequest,
+} from '../club/__tests__/fixtures/requests.fixture'
+import { Area } from '../area/area.entity'
+import { ClubModule } from '../club/club.module'
+import { getRepository } from 'typeorm'
 
 describe('club', () => {
   let app: INestApplication
-  
+
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [
@@ -18,10 +23,10 @@ describe('club', () => {
           type: 'sqlite',
           database: ':memory:',
           synchronize: true,
-          entities: [Area, Club]
+          entities: [Area, Club],
         }),
-        ClubModule
-      ]
+        ClubModule,
+      ],
     }).compile()
 
     app = moduleRef.createNestApplication()
@@ -29,12 +34,12 @@ describe('club', () => {
     await setupAreaTable()
   })
 
-  async function setupAreaTable (): Promise<void>{
+  async function setupAreaTable(): Promise<void> {
     const areaRepository = getRepository(Area)
     const areasForTest = ['Argentina', 'England']
 
     areasForTest.forEach(async area => {
-      await areaRepository.insert({name: area})
+      await areaRepository.insert({ name: area })
     })
   }
 
@@ -80,9 +85,7 @@ describe('club', () => {
   })
 
   describe('Geting clubs', () => {
-
-    it('get all clubs',async () => {
-
+    it('get all clubs', async () => {
       await request(app.getHttpServer())
         .get('/club')
         .expect(HttpStatus.OK)
@@ -105,7 +108,7 @@ describe('club', () => {
         })
     })
 
-    it('get one non-existent club', async() => {
+    it('get one non-existent club', async () => {
       const CLUB_ID = -1
 
       await request(app.getHttpServer())
@@ -115,7 +118,6 @@ describe('club', () => {
   })
 
   describe('Updating clubs', () => {
-
     it('update succesfully', async () => {
       const CLUB_ID_TO_UPDATE = 1
       const bodyReq = validUpdateRequest
@@ -137,13 +139,13 @@ describe('club', () => {
       const bodyReq = invalidUpdateRequest
 
       await request(app.getHttpServer())
-      .put('/club/' + CLUB_ID_TO_UPDATE)
-      .send(bodyReq)
-      .expect(HttpStatus.BAD_REQUEST)
-      .expect('Content-Type', /json/)
-      .expect(res => {
-        expect(Array.isArray(res.body.message)).toBe(true)
-      })
+        .put('/club/' + CLUB_ID_TO_UPDATE)
+        .send(bodyReq)
+        .expect(HttpStatus.BAD_REQUEST)
+        .expect('Content-Type', /json/)
+        .expect(res => {
+          expect(Array.isArray(res.body.message)).toBe(true)
+        })
     })
 
     it('try to update with valid information but non-existent area', async () => {
@@ -173,4 +175,3 @@ describe('club', () => {
     })
   })
 })
-

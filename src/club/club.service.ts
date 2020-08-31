@@ -1,20 +1,20 @@
-import { Injectable, Inject } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Injectable, Inject } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import { Repository } from 'typeorm'
 
 import { Club } from './club.entity'
-import { AreaService } from '../area/area.service';
-import { Area } from '../area/area.entity';
-import { CreateClubDto } from './dto/create-club.dto';
-import { ValidationError } from 'class-validator';
-import { UpdateClubDto } from './dto/update-club.dto';
+import { AreaService } from '../area/area.service'
+import { Area } from '../area/area.entity'
+import { CreateClubDto } from './dto/create-club.dto'
+import { ValidationError } from 'class-validator'
+import { UpdateClubDto } from './dto/update-club.dto'
 
 @Injectable()
-export class ClubService { 
+export class ClubService {
   constructor(
     @InjectRepository(Club) private clubRepository: Repository<Club>,
-    @Inject(AreaService) private areaService: AreaService
-  ){}
+    @Inject(AreaService) private areaService: AreaService,
+  ) {}
 
   findUnique(id: number): Promise<Club | undefined> {
     return this.clubRepository.findOne(id)
@@ -27,69 +27,84 @@ export class ClubService {
   async create(newClubDto: CreateClubDto): Promise<void> {
     const area = await this.getArea(newClubDto.area)
 
-    if(area){
-      const clubInstance = this.clubRepository.create({...newClubDto, area})
+    if (area) {
+      const clubInstance = this.clubRepository.create({ ...newClubDto, area })
       await this.clubRepository.insert(clubInstance)
-
-    }else{
+    } else {
       throw this.createAreaInvalidErrorMessage(newClubDto.area)
     }
   }
 
-  async update(clubInstance: Club, updateClubDto: UpdateClubDto): Promise<Club>{
-
-    if(updateClubDto.area){
+  async update(
+    clubInstance: Club,
+    updateClubDto: UpdateClubDto,
+  ): Promise<Club> {
+    if (updateClubDto.area) {
       try {
-        const clubUpdated = await this.updateWithArea(clubInstance, updateClubDto)
+        const clubUpdated = await this.updateWithArea(
+          clubInstance,
+          updateClubDto,
+        )
         return clubUpdated
       } catch (error) {
         throw error
       }
-    }else{
-      const clubUpdated = await this.updateWithoutArea(clubInstance, updateClubDto)
+    } else {
+      const clubUpdated = await this.updateWithoutArea(
+        clubInstance,
+        updateClubDto,
+      )
       return clubUpdated
     }
   }
 
-  private async updateWithArea(clubInstance: Club, updateClubDto: UpdateClubDto): Promise<Club> {
-    if(!updateClubDto.area) throw new Error()
-    
+  private async updateWithArea(
+    clubInstance: Club,
+    updateClubDto: UpdateClubDto,
+  ): Promise<Club> {
+    if (!updateClubDto.area) throw new Error()
+
     const area = await this.getArea(updateClubDto.area)
 
-    if(area) {
-      await this.clubRepository.update(clubInstance.id, {...updateClubDto, area})
+    if (area) {
+      await this.clubRepository.update(clubInstance.id, {
+        ...updateClubDto,
+        area,
+      })
       const clubUpdated = await this.findUnique(clubInstance.id)
-      
-      if(clubUpdated) return clubUpdated
+
+      if (clubUpdated) return clubUpdated
       else throw new Error('divergences between ids in database')
-    }
-    else{
+    } else {
       throw this.createAreaInvalidErrorMessage(updateClubDto.area)
     }
   }
 
-  private async updateWithoutArea(clubInstance: Club, updateClubDto: UpdateClubDto): Promise<Club>{
+  private async updateWithoutArea(
+    clubInstance: Club,
+    updateClubDto: UpdateClubDto,
+  ): Promise<Club> {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const {area, ...updateClubInfoWithoutArea} = updateClubDto 
+    const { area, ...updateClubInfoWithoutArea } = updateClubDto
 
     await this.clubRepository.update(clubInstance.id, updateClubInfoWithoutArea)
     const clubUpdated = await this.findUnique(clubInstance.id)
 
-    if(clubUpdated) return clubUpdated
+    if (clubUpdated) return clubUpdated
     else throw new Error('divergences between ids in database')
   }
 
-  private createAreaInvalidErrorMessage(value: string): ValidationError{
+  private createAreaInvalidErrorMessage(value: string): ValidationError {
     const areaError = new ValidationError()
     areaError.children = []
     areaError.property = 'area'
     areaError.value = value
-    areaError.constraints = {'valid-area': 'the area does not exist'}
+    areaError.constraints = { 'valid-area': 'the area does not exist' }
 
     return areaError
   }
 
-  private async getArea(name: string): Promise<Area | undefined>{
+  private async getArea(name: string): Promise<Area | undefined> {
     const area = await this.areaService.findByName(name)
     return area
   }

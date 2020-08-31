@@ -1,4 +1,4 @@
 export default {
   id: 1,
-  name: 'Argentina'
+  name: 'Argentina',
 }

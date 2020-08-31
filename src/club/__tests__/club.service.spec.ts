@@ -15,15 +15,14 @@ const mockClubRepository = {
   save: jest.fn(),
   create: jest.fn(),
   insert: jest.fn(),
-  update: jest.fn()
+  update: jest.fn(),
 }
 
 const mockAreaService = {
-  findByName: jest.fn()
+  findByName: jest.fn(),
 }
 
 describe('ClubService', () => {
-
   let clubService: ClubService
   let clubRepository
   let areaService
@@ -32,28 +31,24 @@ describe('ClubService', () => {
     const module = await Test.createTestingModule({
       providers: [
         ClubService,
-        {provide: getRepositoryToken(Club), useValue: mockClubRepository},
-        {provide: AreaService, useValue: mockAreaService}
-      ]
+        { provide: getRepositoryToken(Club), useValue: mockClubRepository },
+        { provide: AreaService, useValue: mockAreaService },
+      ],
     }).compile()
-    
+
     clubService = module.get<ClubService>(ClubService)
     clubRepository = module.get<Repository<Club>>(getRepositoryToken(Club))
     areaService = module.get<AreaService>(AreaService)
-    
   })
 
   describe('Get clubs', () => {
-    
     it('get all clubs', async () => {
-
       const result = await clubService.findAll()
       expect(clubRepository.find).toHaveBeenCalledTimes(1)
       expect(result).toEqual(['all clubs'])
     })
 
     it('get one club', async () => {
-
       const clubId = 1
       await clubService.findUnique(clubId)
       expect(clubRepository.findOne).toHaveBeenCalledWith(clubId)
@@ -61,7 +56,6 @@ describe('ClubService', () => {
   })
 
   describe('create club', () => {
-
     beforeEach(() => {
       mockAreaService.findByName.mockClear()
       mockClubRepository.create.mockClear()
@@ -69,15 +63,18 @@ describe('ClubService', () => {
     })
 
     it('create succesfully', async () => {
-      const mockArea = {id: 1, name: 'area'}
+      const mockArea = { id: 1, name: 'area' }
       mockAreaService.findByName.mockResolvedValueOnce(mockArea)
 
       const newClubDto = newClubDtoFixture
 
       await clubService.create(newClubDto)
-      
+
       expect(areaService.findByName).toBeCalledWith(newClubDto.area)
-      expect(clubRepository.create).toBeCalledWith({...newClubDto, area: mockArea})
+      expect(clubRepository.create).toBeCalledWith({
+        ...newClubDto,
+        area: mockArea,
+      })
       expect(clubRepository.insert).toBeCalled()
     })
 
@@ -86,9 +83,9 @@ describe('ClubService', () => {
 
       const newClubDto = newClubDtoFixture
 
-      try{
+      try {
         await clubService.create(newClubDto)
-      }catch(error){
+      } catch (error) {
         expect(areaService.findByName).toBeCalledWith(newClubDto.area)
         expect(clubRepository.create).not.toBeCalled()
         expect(clubRepository.insert).not.toBeCalled()
@@ -99,57 +96,57 @@ describe('ClubService', () => {
   })
 
   describe('update club', () => {
-
     beforeEach(() => {
       mockAreaService.findByName.mockClear()
       mockClubRepository.update.mockClear()
     })
 
     it('update succesfully without area', async () => {
-      const updateInfo = {name: 'other name'}
+      const updateInfo = { name: 'other name' }
       const clubInstance = plainToClass(Club, clubFixture)
       const spyFindUnique = spyOn(clubService, 'findUnique')
 
       const result = await clubService.update(clubInstance, updateInfo)
 
       expect(areaService.findByName).not.toBeCalled()
-      expect(clubRepository.update).toHaveBeenCalledWith(clubInstance.id, updateInfo)
+      expect(clubRepository.update).toHaveBeenCalledWith(
+        clubInstance.id,
+        updateInfo,
+      )
       expect(spyFindUnique).toHaveBeenCalledWith(clubInstance.id)
       expect(result).toEqual(clubService.findUnique(clubInstance.id))
-      
     })
 
     it('update succesfully with area', async () => {
-      const mockValidArea = {id: 1, name: 'area valid'}
+      const mockValidArea = { id: 1, name: 'area valid' }
       mockAreaService.findByName.mockResolvedValueOnce(mockValidArea)
-      const updateDto = {name: 'other name', area: 'England'}
+      const updateDto = { name: 'other name', area: 'England' }
       const clubInstance = plainToClass(Club, clubFixture)
       const spyFindUnique = spyOn(clubService, 'findUnique')
 
       const result = await clubService.update(clubInstance, updateDto)
 
       expect(areaService.findByName).toBeCalledWith(updateDto.area)
-      expect(clubRepository.update).toBeCalledWith(clubInstance.id, {...updateDto, area: mockValidArea})
+      expect(clubRepository.update).toBeCalledWith(clubInstance.id, {
+        ...updateDto,
+        area: mockValidArea,
+      })
       expect(spyFindUnique).toBeCalledWith(clubInstance.id)
       expect(result).toEqual(clubService.findUnique(clubInstance.id))
-
     })
 
     it('update unsuccessfully with area', async () => {
       mockAreaService.findByName.mockResolvedValueOnce(undefined)
-      const updateDto = {name: 'other name', area: 'InvalidArea'}
+      const updateDto = { name: 'other name', area: 'InvalidArea' }
       const clubInstance = plainToClass(Club, clubFixture)
 
       try {
         await clubService.update(clubInstance, updateDto)
       } catch (error) {
-
         expect(areaService.findByName).toBeCalledWith(updateDto.area)
         expect(clubRepository.update).not.toBeCalled()
         expect(error).toBeInstanceOf(ValidationError)
-
       }
-
     })
   })
 })

@@ -1,4 +1,4 @@
-import { 
+import {
   IsOptional,
   IsEmail,
   IsString,
@@ -12,7 +12,6 @@ import {
 } from 'class-validator'
 
 export class UpdateClubDto {
-
   @IsOptional()
   @IsString()
   @IsNotEmpty()
@@ -20,7 +19,7 @@ export class UpdateClubDto {
     message: 'The name cant be a only numeric',
   })
   @Matches(/.*\S.*/, {
-    message: 'the name cant be only withespaces'
+    message: 'the name cant be only withespaces',
   })
   name?: string
 
@@ -67,15 +66,13 @@ export class UpdateClubDto {
 
   @IsOptional()
   @IsInt({
-    message: 'active value must be 1 (active) or 0 (inactive)'
+    message: 'active value must be 1 (active) or 0 (inactive)',
   })
   @Min(0, {
-    message: 'active value must be 1 (active) or 0 (inactive)'
+    message: 'active value must be 1 (active) or 0 (inactive)',
   })
   @Max(1, {
-    message: 'active value must be 1 (active) or 0 (inactive)'
+    message: 'active value must be 1 (active) or 0 (inactive)',
   })
   active?: 0 | 1
-
-
 }
