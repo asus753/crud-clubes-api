@@ -36,10 +36,10 @@ export class ClubService {
   }
 
   async delete(id: number): Promise<void> {
-    await this.clubRepository.delete({id})
+    await this.clubRepository.delete({ id })
   }
 
-  async update( 
+  async update(
     clubInstance: Club,
     updateClubDto: UpdateClubDto,
   ): Promise<void> {
@@ -50,10 +50,7 @@ export class ClubService {
         throw error
       }
     } else {
-      await this.updateWithoutArea(
-        clubInstance,
-        updateClubDto,
-      )
+      await this.updateWithoutArea(clubInstance, updateClubDto)
     }
   }
 

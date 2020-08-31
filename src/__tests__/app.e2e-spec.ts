@@ -176,7 +176,6 @@ describe('club', () => {
   })
 
   describe('Deleting clubs', () => {
-
     it('detele succesfully one clubs', async () => {
       const CLUB_ID_TO_DELETE = 1
 

@@ -166,7 +166,6 @@ describe('club controller tests', () => {
   })
 
   describe('delete club', () => {
-
     it('delete succesfully', async () => {
       const CLUB_ID_TO_DELETE = 1
 

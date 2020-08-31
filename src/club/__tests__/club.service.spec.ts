@@ -16,7 +16,7 @@ const mockClubRepository = {
   create: jest.fn(),
   insert: jest.fn(),
   update: jest.fn(),
-  delete: jest.fn()
+  delete: jest.fn(),
 }
 
 const mockAreaService = {
@@ -128,7 +128,6 @@ describe('ClubService', () => {
         ...updateDto,
         area: mockValidArea,
       })
-      
     })
 
     it('update unsuccessfully with area', async () => {
@@ -147,13 +146,12 @@ describe('ClubService', () => {
   })
 
   describe('delete club', () => {
-
     it('delete succesfully', async () => {
       const CLUB_ID_TO_DELETE = 1
 
       await clubService.delete(CLUB_ID_TO_DELETE)
 
-      expect(clubRepository.delete).toBeCalledWith({id: CLUB_ID_TO_DELETE})
+      expect(clubRepository.delete).toBeCalledWith({ id: CLUB_ID_TO_DELETE })
     })
   })
 })
