@@ -138,12 +138,12 @@ This method will delete **permanently** the club
 
 
 #### * Level 1
-![c4 model l1](https://github.com/maurperez/crud-clubes-api/blob/app-developing/docs/c4-diagrams/RESTful%20API%20clubs%20-%20C4%20(L1).jpg?raw=true)
+<img src="./docs/c4-diagrams/RESTful API clubs - C4 (L1).jpg" alt="c4-diagram-l1"/>
 
 #### * Level 2
-![c4 model l2](https://github.com/maurperez/crud-clubes-api/blob/app-developing/docs/c4-diagrams/RESTful%20API%20clubs%20-%20C4%20(L2).jpg?raw=true)
+<img src="./docs/c4-diagrams/RESTful API clubs - C4 (L2).jpg" alt="c4-diagram-l2"/>
 
 #### * Level 3
-![c4 model l3](https://github.com/maurperez/crud-clubes-api/blob/app-developing/docs/c4-diagrams/RESTful%20API%20clubs%20-%20C4%20(L3).jpg?raw=true)
+<img src="./docs/c4-diagrams/RESTful API clubs - C4 (L3).jpg" alt="c4-diagram-l3"/>
 
 
