@@ -39,15 +39,16 @@ $ npm run test:cov
 
 ### Routes and http methods
 
-* GET  /club      --> return an array with information of ALL clubs
-* GET  /club/:id  --> return un object with information of ONE club with the corresponding id
-* POST /club      --> this is used to create a new club
-* PUT  /club/:id  --> this is used to update an existent club
+* GET  /club        --> return an array with information of ALL clubs
+* GET  /club/:id    --> return un object with information of ONE club with the corresponding id
+* POST /club        --> this is used to create a new club
+* PUT  /club/:id    --> this is used to update an existent club
+* DELETE /club/:id  --> delete the club with corresponding id
 
 
 ### Data structure objects 
 
-* Get one club - GET /club/:id
+#### * Get one club - GET /club/:id
 
 ```json
 {
@@ -73,15 +74,15 @@ $ npm run test:cov
 }
 ```
 
-* Get all clubs - GET /club
+#### * Get all clubs - GET /club
 
 This is an array with all clubs, the club object inside its equal to the obtained in GET /club/:id
 
 
-* Create a new club - POST /club
+#### * Create a new club - POST /club
 
 To create a new club, you need send the information in the body of request, the data structe is
-very similiar to what you get when you do GET /club
+very similiar to what you get when you do GET /club/:id
 
 ```json
 {
@@ -110,7 +111,7 @@ not all fields are necessary to create a club, below is a list of optional field
     - venue
     - active --> by default this is set to 1
 
-* Update a club - PUT /club/:id
+#### * Update a club - PUT /club/:id
 
 The structure of body to update a club is very similiar to the create club, but in this you only
 need include the properties you want to update.
@@ -126,7 +127,23 @@ Here is an example where we only want to update the name and tla
 
 :warning: The year of foundation is not upgradeable
 
+#### * Delete club - DELETE /club/:id
+
+This method will delete **permanently** the club
 
 
+## Arquitecture
+
+### C4 Models
+
+
+#### * Level 1
+![c4 model l1](https://github.com/maurperez/crud-clubes-api/blob/app-developing/docs/c4-diagrams/RESTful%20API%20clubs%20-%20C4%20(L1).jpg?raw=true)
+
+#### * Level 2
+![c4 model l2](https://github.com/maurperez/crud-clubes-api/blob/app-developing/docs/c4-diagrams/RESTful%20API%20clubs%20-%20C4%20(L2).jpg?raw=true)
+
+#### * Level 3
+![c4 model l3](https://github.com/maurperez/crud-clubes-api/blob/app-developing/docs/c4-diagrams/RESTful%20API%20clubs%20-%20C4%20(L3).jpg?raw=true)
 
 

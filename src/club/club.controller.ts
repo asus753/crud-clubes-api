@@ -9,6 +9,9 @@ import {
   ParseIntPipe,
   BadRequestException,
   InternalServerErrorException,
+  Delete,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common'
 
 import { ClubService } from './club.service'
@@ -60,16 +63,21 @@ export class ClubController {
 
     if (clubInstance) {
       try {
-        const clubUpdated = await this.clubService.update(
-          clubInstance,
-          updateClubDto,
-        )
-        return clubUpdated
+        await this.clubService.update(clubInstance, updateClubDto)
+        const clubUpdated = await this.clubService.findUnique(id)
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return clubUpdated!
       } catch (error) {
         if (error instanceof ValidationError)
           throw new BadRequestException([error])
         else throw new InternalServerErrorException()
       }
     } else throw new NotFoundException()
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async delete(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    await this.clubService.delete(id)
   }
 }

@@ -11,11 +11,12 @@ import { plainToClass } from 'class-transformer'
 
 const mockClubRepository = {
   find: jest.fn().mockResolvedValue(['all clubs']),
-  findOne: jest.fn(async () => clubFixture),
+  findOne: jest.fn(),
   save: jest.fn(),
   create: jest.fn(),
   insert: jest.fn(),
   update: jest.fn(),
+  delete: jest.fn(),
 }
 
 const mockAreaService = {
@@ -104,17 +105,14 @@ describe('ClubService', () => {
     it('update succesfully without area', async () => {
       const updateInfo = { name: 'other name' }
       const clubInstance = plainToClass(Club, clubFixture)
-      const spyFindUnique = spyOn(clubService, 'findUnique')
 
-      const result = await clubService.update(clubInstance, updateInfo)
+      await clubService.update(clubInstance, updateInfo)
 
       expect(areaService.findByName).not.toBeCalled()
       expect(clubRepository.update).toHaveBeenCalledWith(
         clubInstance.id,
         updateInfo,
       )
-      expect(spyFindUnique).toHaveBeenCalledWith(clubInstance.id)
-      expect(result).toEqual(clubService.findUnique(clubInstance.id))
     })
 
     it('update succesfully with area', async () => {
@@ -122,17 +120,14 @@ describe('ClubService', () => {
       mockAreaService.findByName.mockResolvedValueOnce(mockValidArea)
       const updateDto = { name: 'other name', area: 'England' }
       const clubInstance = plainToClass(Club, clubFixture)
-      const spyFindUnique = spyOn(clubService, 'findUnique')
 
-      const result = await clubService.update(clubInstance, updateDto)
+      await clubService.update(clubInstance, updateDto)
 
       expect(areaService.findByName).toBeCalledWith(updateDto.area)
       expect(clubRepository.update).toBeCalledWith(clubInstance.id, {
         ...updateDto,
         area: mockValidArea,
       })
-      expect(spyFindUnique).toBeCalledWith(clubInstance.id)
-      expect(result).toEqual(clubService.findUnique(clubInstance.id))
     })
 
     it('update unsuccessfully with area', async () => {
@@ -147,6 +142,16 @@ describe('ClubService', () => {
         expect(clubRepository.update).not.toBeCalled()
         expect(error).toBeInstanceOf(ValidationError)
       }
+    })
+  })
+
+  describe('delete club', () => {
+    it('delete succesfully', async () => {
+      const CLUB_ID_TO_DELETE = 1
+
+      await clubService.delete(CLUB_ID_TO_DELETE)
+
+      expect(clubRepository.delete).toBeCalledWith({ id: CLUB_ID_TO_DELETE })
     })
   })
 })
