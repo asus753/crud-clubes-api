@@ -1,8 +1,8 @@
 {
-  "name": "crud-clubes-api",
+  "name": "crud-clubes-REST-API",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "RESTful API of clubs",
+  "author": "Mauro Alejandro Perez",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
