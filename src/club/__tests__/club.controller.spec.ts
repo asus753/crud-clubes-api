@@ -135,13 +135,14 @@ describe('club controller tests', () => {
     it('update unsuccsesfully: not found club', async () => {
       const CLUB_ID_TO_UPDATE = -1
       mocked(clubService).findUnique.mockRejectedValueOnce(null)
-      const spy = jest.spyOn(clubController, 'findUnique')
+      const spyFindUniqueController = jest.spyOn(clubController, 'findUnique')
       
       try {
         await clubController.update(CLUB_ID_TO_UPDATE, updateDto)
       } catch (error) {
         expect(error).toBeInstanceOf(NotFoundException)
         expect(clubService.findUnique).toBeCalledTimes(1)
+        expect(spyFindUniqueController).toBeCalledTimes(1)
         expect(clubService.update).not.toBeCalled()
       }
     })
