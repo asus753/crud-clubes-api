@@ -11,7 +11,7 @@ import { plainToClass } from 'class-transformer'
 
 const mockClubRepository = {
   find: jest.fn().mockResolvedValue(['all clubs']),
-  findOne: jest.fn(),
+  findOneOrFail: jest.fn(),
   save: jest.fn(),
   create: jest.fn(),
   insert: jest.fn(),
@@ -52,7 +52,7 @@ describe('ClubService', () => {
     it('get one club', async () => {
       const clubId = 1
       await clubService.findUnique(clubId)
-      expect(clubRepository.findOne).toHaveBeenCalledWith(clubId)
+      expect(clubRepository.findOneOrFail).toHaveBeenCalledWith(clubId)
     })
   })
 
