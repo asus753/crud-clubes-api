@@ -16,8 +16,8 @@ export class ClubService {
     @Inject(AreaService) private areaService: AreaService,
   ) {}
 
-  findUnique(id: number): Promise<Club | undefined> {
-    return this.clubRepository.findOne(id)
+  findUnique(id: number): Promise<Club> {
+    return this.clubRepository.findOneOrFail(id)
   }
 
   findAll(): Promise<Club[]> {
