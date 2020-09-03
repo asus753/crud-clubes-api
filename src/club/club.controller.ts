@@ -32,10 +32,12 @@ export class ClubController {
 
   @Get(':id')
   async findUnique(@Param('id', ParseIntPipe) id: number): Promise<Club> {
-    const club = await this.clubService.findUnique(id)
-
-    if (club) return club
-    else throw new NotFoundException()
+    try {
+      const clubInstace = await this.clubService.findUnique(id)
+      return clubInstace
+    } catch (error) {
+      throw new NotFoundException()
+    }
   }
 
   @Post()
@@ -59,20 +61,18 @@ export class ClubController {
     @Param('id', ParseIntPipe) id: number,
     @Body(UpdateClubPipe) updateClubDto: UpdateClubDto,
   ): Promise<Club> {
-    const clubInstance = await this.clubService.findUnique(id)
+    const clubInstance = await this.findUnique(id)
 
-    if (clubInstance) {
-      try {
-        await this.clubService.update(clubInstance, updateClubDto)
-        const clubUpdated = await this.clubService.findUnique(id)
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        return clubUpdated!
-      } catch (error) {
-        if (error instanceof ValidationError)
-          throw new BadRequestException([error])
-        else throw new InternalServerErrorException()
+    try {
+      await this.clubService.update(clubInstance, updateClubDto)
+      return this.findUnique(id)
+    } catch (error) {
+      if (error instanceof ValidationError) {
+        throw new BadRequestException([error])
+      } else {
+        throw new InternalServerErrorException()
       }
-    } else throw new NotFoundException()
+    }
   }
 
   @Delete(':id')

@@ -37,7 +37,7 @@ describe('club controller tests', () => {
 
     it('get existent club', async () => {
       const CLUB_ID = 1
-      mocked(clubService).findUnique.mockResolvedValue(new Club())
+      mocked(clubService).findUnique.mockResolvedValueOnce(new Club())
 
       const club = await clubController.findUnique(CLUB_ID)
 
@@ -47,7 +47,7 @@ describe('club controller tests', () => {
 
     it('get non-existent club', async () => {
       const CLUB_ID = -1
-      mocked(clubService).findUnique.mockResolvedValueOnce(undefined)
+      mocked(clubService).findUnique.mockRejectedValueOnce(null)
 
       try {
         await clubController.findUnique(CLUB_ID)
@@ -112,12 +112,13 @@ describe('club controller tests', () => {
     const club = plainToClass(Club, clubFixture)
 
     beforeEach(() => {
-      mocked(clubService).findUnique.mockClear()
+      mocked(clubService).findUnique.mockReset()
       mocked(clubService).update.mockClear()
     })
 
     it('update succesfully', async () => {
       const CLUB_ID_TO_UPDATE = 1
+      mocked(clubService).findUnique.mockResolvedValueOnce(club)
       mocked(clubService).findUnique.mockResolvedValueOnce(club)
 
       const clubUpdated = await clubController.update(
@@ -133,20 +134,22 @@ describe('club controller tests', () => {
 
     it('update unsuccsesfully: not found club', async () => {
       const CLUB_ID_TO_UPDATE = -1
-      mocked(clubService).findUnique.mockResolvedValueOnce(undefined)
-
+      mocked(clubService).findUnique.mockRejectedValueOnce(null)
+      const spyFindUniqueController = jest.spyOn(clubController, 'findUnique')
+      
       try {
         await clubController.update(CLUB_ID_TO_UPDATE, updateDto)
       } catch (error) {
         expect(error).toBeInstanceOf(NotFoundException)
         expect(clubService.findUnique).toBeCalledTimes(1)
+        expect(spyFindUniqueController).toBeCalledTimes(1)
         expect(clubService.update).not.toBeCalled()
       }
     })
 
     it('update unsuccsesfully: non-existent area', async () => {
       const CLUB_ID_TO_UPDATE = 1
-
+ 
       mocked(clubService).findUnique.mockResolvedValueOnce(club)
       mocked(clubService).update.mockRejectedValueOnce(new ValidationError())
 
