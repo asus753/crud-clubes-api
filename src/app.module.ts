@@ -9,7 +9,7 @@ import { Club } from './club/club.entity'
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: '.env',
+      envFilePath: '.env.dist',
     }),
     TypeOrmModule.forRoot({
       type: 'sqlite',
